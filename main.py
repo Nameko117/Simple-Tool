@@ -12,7 +12,7 @@ def transform(copr19_path, copr66_path, richtek_path):
     # 讀取copr19文件並轉換
     try:
         copr19 = read_excel(copr19_path)
-        result_19 = copr_to_result(copr19)
+        result_19 = copr19_to_result(copr19)
         result_19['U/P'] = copr19['單   價']
     except:
         print('copr19轉換出錯')
@@ -24,7 +24,7 @@ def transform(copr19_path, copr66_path, richtek_path):
     if copr66_path:
         try:
             copr66 = read_excel(copr66_path)
-            result_66 = copr_to_result(copr66)
+            result_66 = copr66_to_result(copr66)
         except:
             print('copr66轉換出錯')
             output_label.configure(text='copr66轉換出錯')
@@ -90,7 +90,7 @@ def transform(copr19_path, copr66_path, richtek_path):
     result.to_excel(result_path, index=False)
     output_label.configure(text='輸出成功！')
 
-def copr_to_result(copr):
+def copr19_to_result(copr):
     result = DataFrame(columns=output_columns)
     result['Customer PO'] = copr['客戶單號']
     result['PO LN'] = copr['品    名'] + '.PO'
@@ -100,6 +100,19 @@ def copr_to_result(copr):
     result['Required Qty'] = copr['訂單數量'] - copr['已交數量']
     result['UoM'] = 'WF'
     result['Order Entry Date'] = copr['訂單日期']
+    result['Status'] = 'Confirmed'
+    return result
+
+def copr66_to_result(copr):
+    result = DataFrame(columns=output_columns)
+    result['Customer PO'] = copr['客戶單號']
+    result['PO LN'] = copr['品    名'] + '.PO'
+    result['Customer Production'] = copr['品    名']
+    result[' Required Date'] = copr['有效截止日期']
+    result[' Confirmed Date'] = "2030/12/31"
+    result['Required Qty'] = copr['訂單數量'] - copr['已交數量']
+    result['UoM'] = 'WF'
+    result['Order Entry Date'] = copr['有效起始日期']
     result['Status'] = 'Confirmed'
     return result
 
